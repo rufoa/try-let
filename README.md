@@ -10,7 +10,7 @@ try-let
 `try-let` is in Clojars. To use it in a Leiningen project, add it to your project.clj dependencies:
 
 ```clojure
-[try-let "1.0.0"]
+[try-let "1.1.0"]
 ```
 
 then require `try-let` in your code:
@@ -69,6 +69,10 @@ You can have multiple `catch` stanzas for different exceptions. Much of what you
       (log/error e "Some other error occurred")
       (throw e)))
 ```
+
+## Slingshot support ##
+
+There is also a `try+-let` macro which is compatible with [slingshot](https://github.com/scgilardi/slingshot)-style `catch` stanzas.
 
 ## TODO ##
 
