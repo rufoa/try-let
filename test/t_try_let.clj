@@ -102,3 +102,18 @@
 		false
 		(catch [] _ (:object &throw-context)))
 	=> {:foo :bar})
+
+(fact "destructuring works"
+
+	; vectors
+	(try-let [[a b] [1 2]
+	          [c & d] [3 4 5]]
+		[a b c d])
+	=> [1 2 3 [4 5]]
+
+	; maps
+	(try-let [{:keys [a b]} {:a 1 :b 2}
+	          {:strs [c d]} {"c" 3 "d" 4}
+	          {{{:keys [e] :as f} :y} :x} {:x {:y {:e 5}}}]
+		[a b c d e f])
+	=> [1 2 3 4 5 {:e 5}])

@@ -74,10 +74,6 @@ You can have multiple `catch` stanzas for different exceptions. Much of what you
 
 There is also a `try+-let` macro which is compatible with [slingshot](https://github.com/scgilardi/slingshot)-style `catch` stanzas.
 
-## TODO ##
-
-- Destructuring support
-
 ## License ##
 
 Copyright © 2015 [rufoa](https://github.com/rufoa)
