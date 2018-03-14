@@ -5,12 +5,13 @@
 	[bindings & body]
 	(assert (even? (count bindings))
 		"try-let needs an even number of forms in binding vector")
-	(let [bindings-ls (take-nth 2 bindings)
+	(let [bindings-destructured (destructure bindings)
+	      bindings-ls (take-nth 2 bindings-destructured)
 	      gensyms (take (count bindings-ls) (repeatedly gensym))
 	      [thens stanzas] (split-with #(not (and (list? %) (= (first %) 'catch))) body)]
 		`(let [[ok# ~@gensyms]
 				(try
-					(let [~@bindings] [true ~@bindings-ls])
+					(let [~@bindings-destructured] [true ~@bindings-ls])
 					~@(map
 						(fn [stanza]
 							(assert (>= (count stanza) 3)
@@ -29,12 +30,13 @@
 	[bindings & body]
 	(assert (even? (count bindings))
 		"try-let needs an even number of forms in binding vector")
-	(let [bindings-ls (take-nth 2 bindings)
+	(let [bindings-destructured (destructure bindings)
+	      bindings-ls (take-nth 2 bindings-destructured)
 	      gensyms (take (count bindings-ls) (repeatedly gensym))
 	      [thens stanzas] (split-with #(not (and (list? %) (= (first %) 'catch))) body)]
 		`(let [[ok# ~@gensyms]
 				(slingshot.slingshot/try+
-					(let [~@bindings] [true ~@bindings-ls])
+					(let [~@bindings-destructured] [true ~@bindings-ls])
 					~@(map
 						(fn [stanza]
 							(assert (>= (count stanza) 3)
