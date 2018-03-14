@@ -1,4 +1,4 @@
-(defproject try-let "1.1.0"
+(defproject try-let "1.2.0"
 	:description "Better exception handling for Clojure let expressions"
 	:url "https://github.com/rufoa/try-let"
 	:license
@@ -12,4 +12,7 @@
 				 [slingshot "0.12.2"]]
 			 :plugins
 				[[lein-midje "3.2"]]}}
+	:scm
+		{:name "git"
+		 :url "https://github.com/rufoa/try-let"}
 	:main try-let)

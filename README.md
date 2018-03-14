@@ -10,7 +10,7 @@ try-let
 `try-let` is in Clojars. To use it in a Leiningen project, add it to your project.clj dependencies:
 
 ```clojure
-[try-let "1.1.0"]
+[try-let "1.2.0"]
 ```
 
 then require `try-let` in your code:
