@@ -4,11 +4,11 @@
 	:license
 		{:name "Eclipse Public License"
 		 :url "http://www.eclipse.org/legal/epl-v10.html"}
-	:dependencies [[org.clojure/clojure "1.9.0"]]
+	:dependencies [[org.clojure/clojure "1.10.0"]]
 	:profiles
 		{:dev
 			{:dependencies
-				[[midje "1.9.1"]
+				[[midje "1.9.6"]
 				 [slingshot "0.12.2"]]
 			 :plugins
 				[[lein-midje "3.2"]]}}
