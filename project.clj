@@ -1,4 +1,4 @@
-(defproject try-let "1.2.0"
+(defproject try-let "1.3.0-SNAPSHOT"
 	:description "Better exception handling for Clojure let expressions"
 	:url "https://github.com/rufoa/try-let"
 	:license
