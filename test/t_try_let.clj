@@ -125,6 +125,32 @@
 		[a b c d e f])
 	=> [1 2 3 4 5 {:e 5}])
 
+(fact "finally stanza works"
+
+	; finally stanza evaluated when exception is not raised
+	(let [evaled (atom false)]
+		(try-let []
+			@evaled
+			(finally (swap! evaled not))))
+	=> true
+
+	; finally stanza evaluated when exception is raised and caught
+	(let [evaled (atom false)]
+		(try-let [x (/ 1 0)]
+			(catch Exception _)
+			(finally (swap! evaled not)))
+		@evaled)
+	=> true
+
+	; finally stanza evaluated when exception is raised but not caught
+	(let [evaled (atom false)]
+		(try
+			(try-let [x (/ 1 0)]
+				(catch ArrayIndexOutOfBoundsException _)
+				(finally (swap! evaled not)))
+			(catch Exception _ @evaled))) ; ignore uncaught ArithmeticException
+	=> true)
+
 (fact "catch-first syntax works"
 
 	(try-let [x (/ 1 0)]
@@ -146,4 +172,11 @@
 	(try-let []
 		(catch ArithmeticException _ 2)
 		(/ 1 0))
-	=> (throws ArithmeticException))
+	=> (throws ArithmeticException)
+
+	(let [evaled (atom false)]
+		(try-let []
+			(catch Exception _)
+			(finally (swap! evaled not))
+			@evaled))
+	=> true)
