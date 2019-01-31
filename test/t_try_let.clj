@@ -117,3 +117,26 @@
 	          {{{:keys [e] :as f} :y} :x} {:x {:y {:e 5}}}]
 		[a b c d e f])
 	=> [1 2 3 4 5 {:e 5}])
+
+(fact "catch-first syntax works"
+
+	(try-let [x (/ 1 0)]
+		(catch ArithmeticException _ 2)
+		x)
+	=> 2
+
+	(try-let [x (/ 1 0)]
+		(catch ArrayIndexOutOfBoundsException _ 2)
+		x)
+	=> (throws ArithmeticException)
+
+	(try-let [x (/ 1 0)]
+		(catch ArrayIndexOutOfBoundsException _ 2)
+		(catch ArithmeticException _ 2)
+		x)
+	=> 2
+
+	(try-let []
+		(catch ArithmeticException _ 2)
+		(/ 1 0))
+	=> (throws ArithmeticException))
