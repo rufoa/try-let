@@ -13,7 +13,7 @@ try-let
 
 then require `try-let` in your code:
 
-```xml
+```clojure
 (ns my.example
    (:require [try-let :refer [try-let]]))
 ```
@@ -57,7 +57,8 @@ This allows the scope of the `try/catch` to be made as precise as possible, affe
 You can have multiple `catch` stanzas for different exceptions. Much of what you'd expect to work in a normal `let` works:
 
 ```clojure
-(try-let [val-1 (risky-func-1) val-2 (risky-func-2 val-1)]
+(try-let [val-1 (risky-func-1)
+          val-2 (risky-func-2 val-1)]
    (log/info "using values" val-1 "and" val-2)
    (* val-1 val-2)
    (catch SpecificException _
@@ -67,6 +68,23 @@ You can have multiple `catch` stanzas for different exceptions. Much of what you
       (log/error e "Some other error occurred")
       (throw e)))
 ```
+
+As an alternative, you can also put `catch` stanzas before other body expressions:
+
+```clojure
+(try-let [val-1 (risky-func-1)]
+  (catch Exception e
+    (log/error e "Problem calling risky-func-1")
+    0)
+  (try-let [val-2 (risky-func-2 val-1)]
+    (catch Exception _
+      (log/error e "Problem calling risky-func-2")
+      0)
+    (log/info "using values" val-1 "and" val-2)
+    (* val-1 val-2)))
+```
+
+This makes the code logic more linear, where errors are handled close to where they appear.
 
 ## Slingshot support ##
 
