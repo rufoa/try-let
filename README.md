@@ -66,7 +66,9 @@ You can have multiple `catch` stanzas for different exceptions. Much of what you
       123)
    (catch RuntimeException e
       (log/error e "Some other error occurred")
-      (throw e)))
+      (throw e))
+   (finally
+      (release-some-resource)))
 ```
 
 As an alternative, you can also put `catch` stanzas before other body expressions:
@@ -77,14 +79,14 @@ As an alternative, you can also put `catch` stanzas before other body expression
     (log/error e "Problem calling risky-func-1")
     0)
   (try-let [val-2 (risky-func-2 val-1)]
-    (catch Exception _
+    (catch Exception e
       (log/error e "Problem calling risky-func-2")
       0)
     (log/info "using values" val-1 "and" val-2)
     (* val-1 val-2)))
 ```
 
-This makes the code logic more linear, where errors are handled close to where they appear.
+This makes the code logic more linear, where exceptions are handled closer to where they appear.
 
 ## Slingshot support ##
 
@@ -92,6 +94,6 @@ There is also a `try+-let` macro which is compatible with [slingshot](https://gi
 
 ## License ##
 
-Copyright © 2015 [rufoa](https://github.com/rufoa)
+Copyright © 2015-2019 [rufoa](https://github.com/rufoa)
 
 Distributed under the Eclipse Public License, the same as Clojure.
