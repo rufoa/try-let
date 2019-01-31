@@ -97,6 +97,13 @@
 		(catch [:type :bar] _ 2))
 	=> 2
 
+	; catch-first syntax
+	(try+-let [x (throw+ {:type :bar})]
+		(catch [:type :foo] _ 1)
+		(catch [:type :bar] _ 2)
+		false)
+	=> 2
+
 	; slingshot &throw-context works inside catch
 	(try+-let [x (throw+ {:foo :bar})]
 		false
