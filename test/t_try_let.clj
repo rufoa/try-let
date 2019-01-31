@@ -40,7 +40,7 @@
 
 	(try-let [x (/ 1 0)]
 		x
-		(catch ArrayIndexOutOfBoundsException _ 2)
+		(catch ArrayIndexOutOfBoundsException _ 3)
 		(catch ArithmeticException _ 2))
 	=> 2
 
@@ -131,7 +131,7 @@
 	=> (throws ArithmeticException)
 
 	(try-let [x (/ 1 0)]
-		(catch ArrayIndexOutOfBoundsException _ 2)
+		(catch ArrayIndexOutOfBoundsException _ 3)
 		(catch ArithmeticException _ 2)
 		x)
 	=> 2
