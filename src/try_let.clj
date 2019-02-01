@@ -1,25 +1,82 @@
 (ns try-let
-	(:gen-class))
+	(:require
+		[clojure.spec.alpha :as s]
+		[clojure.core.specs.alpha :as cs]))
+
+
+(s/def ::catch
+	(s/and
+		list?
+		#(>= (count %) 3)
+		#(= (first %) 'catch)))
+
+(s/def ::else
+	(s/and
+		list?
+		#(= (first %) 'else)))
+
+(s/def ::finally
+	(s/and
+		list?
+		#(= (first %) 'finally)))
+
+(s/def ::then
+	#(not (and
+		(list? %)
+		(#{'catch 'else 'finally} (first %)))))
+
+
+(s/def ::try-let-body
+	(s/alt
+		:stanzas (s/cat
+			:thens   (s/* ::then)
+			:catches (s/* ::catch)
+			:finally (s/? ::finally))
+		:stanzas (s/cat
+			:catches (s/* ::catch)
+			:finally (s/? ::finally)
+			:thens   (s/* ::then))))
+
+(s/def ::try+-let-body
+	(s/alt
+		:stanzas (s/cat
+			:thens   (s/* ::then)
+			:catches (s/* ::catch)
+			:else    (s/? ::else)
+			:finally (s/? ::finally))
+		:stanzas (s/cat
+			:catches (s/* ::catch)
+			:else    (s/? ::else)
+			:finally (s/? ::finally)
+			:thens   (s/* ::then))))
+
+
+(s/fdef try-let
+	:args (s/cat
+		:bindings ::cs/bindings
+		:body ::try-let-body))
+
+(s/fdef try+-let
+	:args (s/cat
+		:bindings ::cs/bindings
+		:body ::try+-let-body))
+
 
 (defmacro try-let
 	[bindings & body]
-	(assert (even? (count bindings))
-		"try-let needs an even number of forms in binding vector")
-	(let [bindings-destructured (destructure bindings)
+	(let [[_ {:keys [thens catches finally]}] (s/conform ::try-let-body body)
+	      bindings-destructured (destructure bindings)
 	      bindings-ls (take-nth 2 bindings-destructured)
-	      gensyms (take (count bindings-ls) (repeatedly gensym))
-	      {thens nil catches 'catch finallies 'finally} (group-by #(when (and (list? %) (#{'catch 'finally} (first %))) (first %)) body)]
+	      gensyms (take (count bindings-ls) (repeatedly gensym))]
 		`(let [[ok# ~@gensyms]
 				(try
 					(let [~@bindings-destructured] [true ~@bindings-ls])
 					~@(map
 						(fn [stanza]
-							(assert (>= (count stanza) 3)
-								"Malformed catch stanza")
 							(let [[x y z & body] stanza]
 								`(~x ~y ~z [false (do ~@body)])))
 						catches)
-					~@finallies)] ; only one is permitted but let the compiler handle that
+					~@(when finally [finally]))]
 			(if ok#
 				(let [~@(interleave bindings-ls gensyms)]
 					~@thens)
@@ -27,24 +84,20 @@
 
 (defmacro try+-let
 	[bindings & body]
-	(assert (even? (count bindings))
-		"try-let needs an even number of forms in binding vector")
-	(let [bindings-destructured (destructure bindings)
+	(let [[_ {:keys [thens catches else finally]}] (s/conform ::try+-let-body body)
+	      bindings-destructured (destructure bindings)
 	      bindings-ls (take-nth 2 bindings-destructured)
-	      gensyms (take (count bindings-ls) (repeatedly gensym))
-	      {thens nil catches 'catch elses 'else finallies 'finally} (group-by #(when (and (list? %) (#{'catch 'else 'finally} (first %))) (first %)) body)]
+	      gensyms (take (count bindings-ls) (repeatedly gensym))]
 		`(let [[ok# ~@gensyms]
 				(slingshot.slingshot/try+
 					(let [~@bindings-destructured] [true ~@bindings-ls])
 					~@(map
 						(fn [stanza]
-							(assert (>= (count stanza) 3)
-								"Malformed catch stanza")
 							(let [[x y z & body] stanza]
 								`(~x ~y ~z [false (do ~@body)])))
 						catches)
-					~@elses
-					~@finallies)]
+					~@(when else [else])
+					~@(when finally [finally]))]
 			(if ok#
 				(let [~@(interleave bindings-ls gensyms)]
 					~@thens)
